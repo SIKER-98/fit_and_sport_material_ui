@@ -11,6 +11,7 @@ import PlanPage from "./pages/PlanPage";
 import PlanViewPage from "./pages/PlanViewPage";
 import store from "./redux/store";
 import {Provider} from "react-redux";
+import AuthenticatedRoute from "./components/AuthenticatedRoute";
 
 const theme = createMuiTheme({
     palette: {
@@ -26,24 +27,24 @@ function App() {
                 <BrowserRouter>
                     <Layout>
                         <Switch>
-                            <Route exact path={'/'}>
+                            <AuthenticatedRoute exact path={'/'}>
                                 <HomePage/>
-                            </Route>
+                            </AuthenticatedRoute>
                             <Route path={'/register'}>
                                 <RegisterPage/>
                             </Route>
                             <Route path={'/login'}>
                                 <LoginPage/>
                             </Route>
-                            <Route path={'/create'}>
+                            <AuthenticatedRoute path={'/create'}>
                                 <CreatePlanPage/>
-                            </Route>
-                            <Route path={'/training'}>
+                            </AuthenticatedRoute>
+                            <AuthenticatedRoute path={'/training'}>
                                 <PlanPage/>
-                            </Route>
-                            <Route path={'/plan'}>
+                            </AuthenticatedRoute>
+                            <AuthenticatedRoute path={'/plan'}>
                                 <PlanViewPage/>
-                            </Route>
+                            </AuthenticatedRoute>
                         </Switch>
                     </Layout>
                 </BrowserRouter>

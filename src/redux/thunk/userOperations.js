@@ -12,8 +12,9 @@ export const getAllUsers = () => {
     )
 }
 
-export const apiLogin = (email, password) =>
+export const apiLogin = ({email, password}) =>
     async (dispatch, getState, api) => {
+        console.log(email, password)
         const respond = await axios.post(api + 'api/users/login', {}, {
             params: {
                 nickname: email,
@@ -25,6 +26,31 @@ export const apiLogin = (email, password) =>
 
         if (respond.status === 200) {
             dispatch(userActions.login(respond.data))
+            //TODO: poprawic endpoint i zamienic komenty
+            dispatch(userActions.login({
+                userId: respond.data,
+                email,
+                firstName: 'first',
+                lastName: 'last'
+            }))
         }
+
+        return respond.status
+    }
+
+export const apiRegister = ({firstName, lastName, email, password}) =>
+    async (dispatch, getState, api) => {
+    //TODO: zmienic endpoint aby bylo to co wyzej
+        const respond = await axios.post(api + 'api/users/register', {}, {
+            params: {
+                nickname: email,
+                password,
+                height: 69
+            }
+        })
+
+        console.log("register:", respond)
+
+        return respond.status
     }
 

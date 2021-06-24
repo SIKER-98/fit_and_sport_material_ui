@@ -21,6 +21,8 @@ import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import {format} from 'date-fns'
 import Avatar from '@material-ui/core/Avatar'
+import {connect} from "react-redux";
+import userActions from "../redux/actions/userActions";
 
 const drawerWidth = 240
 
@@ -57,14 +59,15 @@ const useStyles = makeStyles((theme) => {
         avatar: {
             marginLeft: theme.spacing(2),
         },
-        appBarList:{
-            display:'flex',
-            flexDirection:'row'
+        appBarList: {
+            display: 'flex',
+            flexDirection: 'row'
         }
     }
 })
 
-export default function Layout({children}) {
+
+const Layout = ({children, user, logout}) => {
     const classes = useStyles()
     const history = useHistory()
     const location = useLocation()
@@ -120,20 +123,42 @@ export default function Layout({children}) {
                     <Typography className={classes.date}>
                         Today is the {format(new Date(), 'do MMMM Y')}
                     </Typography>
-                    <Typography>Unsigned</Typography>
+                    <Typography>{user.userId < 0 ? 'Unsigned' : `${user.firstName} ${user.lastName}`}</Typography>
                     <AccountCircle className={classes.avatar}/>
 
                     <List className={classes.appBarList}>
-                        {appBarItems.map((item, index)=>(
-                            <ListItem
+                        {user.userId > 0 &&
+                        <ListItem
                             button
-                            key={index}
-                            onClick={()=>history.push(item.path)}
+                            onClick={() => {
+                                logout()
+                                history.push('/login')
+                            }}
+                        >
+                            <ListItemIcon style={{color: 'white'}}><ExitToApp/></ListItemIcon>
+                            <ListItemText primary={'LOGOUT'}/>
+                        </ListItem>
+                        }
+
+                        {user.userId < 0 &&
+                        <>
+                            <ListItem
+                                button
+                                onClick={() => history.push('/login')}
                             >
-                                <ListItemIcon style={{color:'white'}}>{item.icon}</ListItemIcon>
-                                <ListItemText primary={item.text}/>
+                                <ListItemIcon style={{color: 'white'}}><VpnKey/></ListItemIcon>
+                                <ListItemText primary={'LOGIN'}/>
                             </ListItem>
-                        ))}
+
+                            <ListItem
+                                button
+                                onClick={() => history.push('/register')}
+                            >
+                                <ListItemIcon style={{color: 'white'}}><PersonAdd/></ListItemIcon>
+                                <ListItemText primary={'REGISTER'}/>
+                            </ListItem>
+                        </>
+                        }
                     </List>
 
                 </Toolbar>
@@ -154,8 +179,10 @@ export default function Layout({children}) {
                 </div>
 
                 {/* links/list section */}
+
                 <List>
-                    {menuItems.map((item) => (
+
+                    {user.userId > 0 && menuItems.map((item) => (
                         <ListItem
                             button
                             key={item.text}
@@ -165,7 +192,8 @@ export default function Layout({children}) {
                             <ListItemIcon>{item.icon}</ListItemIcon>
                             <ListItemText primary={item.text}/>
                         </ListItem>
-                    ))}
+                    ))
+                    }
                 </List>
 
             </Drawer>
@@ -178,3 +206,13 @@ export default function Layout({children}) {
         </div>
     )
 }
+
+const mapStateToProps = state => ({
+    user: state.user
+})
+
+const mapDispatchToProps = dispatch => ({
+    logout: () => dispatch(userActions.logout())
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Layout)

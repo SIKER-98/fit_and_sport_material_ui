@@ -8,6 +8,9 @@ import Typography from '@material-ui/core/Typography';
 import {makeStyles} from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import {useHistory} from "react-router-dom";
+import {connect} from "react-redux";
+import userActions from "../redux/actions/userActions";
+import {apiRegister, getAllUsers} from "../redux/thunk/userOperations";
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -25,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const RegisterPage = () => {
+const RegisterPage = ({register, fetchUsers}) => {
     const classes = useStyles();
     const history = useHistory()
 
@@ -35,25 +38,39 @@ const RegisterPage = () => {
         email: ' ',
         password: ' '
     })
-
-    const validationRef = {
-        firstNameRef: React.createRef(),
-        lastNameRef: React.createRef(),
-        emailRef: React.createRef(),
-        passwordRef: React.createRef()
-    }
+    const [error, setError] = useState({
+        firstName: false,
+        lastName: false,
+        email: false,
+        password: false
+    })
 
     const onChange = (event) => {
         const newData = {...registerData, [event.target.name]: event.target.value}
         setRegisterData(newData)
-        console.log(newData)
+        setError({...error, [event.target.name]: false})
     }
 
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault()
+        console.log(registerData)
 
-        //TODO: rejestracja
-        history.push('/login')
+        setError({
+            firstName: registerData.firstName.length < 3,
+            lastName: registerData.lastName.length < 3,
+            email: registerData.email.length < 3,
+            password: registerData.password.length < 3
+        })
+
+        if (registerData.firstName.length < 3 || registerData.lastName.length < 3 ||
+            registerData.email.length < 3 || registerData.password.length < 3)
+            return
+
+        let status = await register(registerData)
+        await fetchUsers()
+
+        if (status === 200)
+            history.push('/login')
     }
 
 
@@ -65,11 +82,10 @@ const RegisterPage = () => {
                     Sign up
                 </Typography>
 
-                <form className={classes.form}  onSubmit={onSubmit}>
+                <form className={classes.form} onSubmit={onSubmit}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
                             <TextField
-                                ref={validationRef.firstNameRef}
                                 onChange={onChange}
                                 name="firstName"
                                 variant="outlined"
@@ -77,42 +93,42 @@ const RegisterPage = () => {
                                 fullWidth
                                 label="First Name"
                                 autoFocus
-                                error={registerData.firstName===''}
-                                helperText={registerData.firstName===''?'Empty field!':''}
+                                // error={registerData.firstName === ''}
+                                helperText={registerData.firstName === '' ? 'Empty field!' : ''}
                                 autoComplete={'off'}
+                                error={error.firstName}
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <TextField
-                                ref={validationRef.lastNameRef}
                                 onChange={onChange}
                                 variant="outlined"
                                 required
                                 fullWidth
                                 label="Last Name"
                                 name="lastName"
-                                error={registerData.lastName===''}
-                                helperText={registerData.lastName===''?'Empty field!':''}
+                                // error={registerData.lastName === ''}
+                                helperText={registerData.lastName === '' ? 'Empty field!' : ''}
                                 autoComplete={'off'}
+                                error={error.lastName}
                             />
                         </Grid>
                         <Grid item xs={12}>
                             <TextField
-                                ref={validationRef.emailRef}
                                 onChange={onChange}
                                 variant="outlined"
                                 required
                                 fullWidth
                                 label="Email Address"
                                 name="email"
-                                error={registerData.email===''}
-                                helperText={registerData.email===''?'Empty field!':''}
+                                // error={registerData.email === ''}
+                                helperText={registerData.email === '' ? 'Empty field!' : ''}
                                 autoComplete={'off'}
+                                error={error.email}
                             />
                         </Grid>
                         <Grid item xs={12}>
                             <TextField
-                                ref={validationRef.passwordRef}
                                 onChange={onChange}
                                 variant="outlined"
                                 required
@@ -120,9 +136,10 @@ const RegisterPage = () => {
                                 name="password"
                                 label="Password"
                                 type="password"
-                                error={registerData.password===''}
-                                helperText={registerData.password===''?'Empty field!':''}
+                                // error={registerData.password === ''}
+                                helperText={registerData.password === '' ? 'Empty field!' : ''}
                                 autoComplete={'off'}
+                                error={error.password}
                             />
                         </Grid>
                     </Grid>
@@ -152,4 +169,9 @@ const RegisterPage = () => {
     );
 }
 
-export default RegisterPage
+const mapDispatchToProps = dispatch => ({
+    register: (item) => dispatch(apiRegister(item)),
+    fetchUsers: () => dispatch(getAllUsers())
+})
+
+export default connect(null, mapDispatchToProps)(RegisterPage)

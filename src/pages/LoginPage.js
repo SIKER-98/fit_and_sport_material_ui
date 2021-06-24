@@ -1,11 +1,11 @@
-import React from "react";
+import React, {useState} from "react";
 import Container from "@material-ui/core/Container";
 import {makeStyles} from "@material-ui/core/styles";
 import {Button, Grid, Link, TextField, Typography} from "@material-ui/core";
 import {useHistory} from "react-router-dom";
 import {connect} from "react-redux";
 import store from "../redux/store";
-import {fetchUsers, getAllUsers} from "../redux/thunk/userOperations";
+import {apiLogin, fetchUsers, getAllUsers} from "../redux/thunk/userOperations";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -23,12 +23,44 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-const LoginPage = ({user, getAllUsers}) => {
+const LoginPage = ({user, getAllUsers, apiLogin}) => {
     const classes = useStyles()
     const history = useHistory()
+    const [loginData, setLoginData] = useState({
+        email: ' ',
+        password: ' '
+    })
+    const [error, setError] = useState(false)
 
-    const loginClick =()=>{
+    const onChange = (event) => {
+        setError(false)
+        setLoginData({...loginData, [event.target.name]: event.target.value})
+    }
 
+    const loginClick = async (e) => {
+        e.preventDefault()
+
+
+        if (loginData.email === '' || loginData.email.length < 3) {
+            setError(true)
+            return
+        }
+
+        if (loginData.password === '' || loginData.password.length < 3) {
+            setError(true)
+            return
+        }
+        let status = -1
+
+        try {
+            status = await apiLogin(loginData)
+        } catch (e) {
+            setError(true)
+        }
+
+        if (status === 200) {
+            history.push('/training')
+        }
     }
 
     return (
@@ -47,9 +79,10 @@ const LoginPage = ({user, getAllUsers}) => {
                                 variant={'outlined'}
                                 required
                                 fullWidth
-                                id={'email'}
                                 label={'Email'}
                                 autoFocus
+                                onChange={onChange}
+                                error={error}
                             />
                         </Grid>
 
@@ -61,8 +94,9 @@ const LoginPage = ({user, getAllUsers}) => {
                                 type={'password'}
                                 required
                                 fullWidth
-                                id={'password'}
                                 label={'Password'}
+                                onChange={onChange}
+                                error={error}
                             />
                         </Grid>
 
@@ -72,11 +106,7 @@ const LoginPage = ({user, getAllUsers}) => {
                             variant={'contained'}
                             color={'primary'}
                             className={classes.submit}
-                            onClick={(e) => {
-                                e.preventDefault()
-                                getAllUsers()
-                                console.log(user)
-                            }}
+                            onClick={(e) => loginClick(e)}
                         >
                             Sign in
                         </Button>
@@ -104,7 +134,8 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-    getAllUsers: () => dispatch(getAllUsers())
+    getAllUsers: () => dispatch(getAllUsers()),
+    apiLogin: (item) => dispatch(apiLogin(item))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginPage)
