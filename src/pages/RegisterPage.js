@@ -66,8 +66,20 @@ const RegisterPage = ({register, fetchUsers}) => {
             registerData.email.length < 3 || registerData.password.length < 3)
             return
 
-        let status = await register(registerData)
-        await fetchUsers()
+        let status = -1
+
+        try {
+            status = await register(registerData)
+        } catch (e) {
+            setError({
+                firstName: false,
+                lastName: false,
+                email: true,
+                password: false
+            })
+        }
+
+        // await fetchUsers()
 
         if (status === 200)
             history.push('/login')
