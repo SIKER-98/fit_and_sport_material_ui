@@ -1,11 +1,12 @@
-import React from "react";
+import React, {useEffect} from "react";
 import PlanCard from "../components/PlanCard";
 import Masonry from "react-masonry-css";
 import {Container} from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import {makeStyles} from "@material-ui/core/styles";
 import {useHistory} from "react-router-dom";
+import {apiFetchExercises} from "../redux/thunk/exerciseOperations";
+import {connect} from "react-redux";
 
 const useStyles = makeStyles(theme => ({
     create: {
@@ -13,9 +14,13 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-const PlanPage = () => {
+const PlanPage = ({fetchExercise}) => {
     const classes = useStyles()
     const history = useHistory()
+
+    useEffect(() => {
+        fetchExercise()
+    }, [])
 
     const breakpoints = {
         default: 3,
@@ -30,7 +35,9 @@ const PlanPage = () => {
                 variant={'contained'}
                 color={'secondary'}
                 className={classes.create}
-                onClick={()=>{history.push('/create')}}
+                onClick={() => {
+                    history.push('/create')
+                }}
             >
                 Create new training plan
             </Button>
@@ -65,4 +72,8 @@ const PlanPage = () => {
     )
 }
 
-export default PlanPage
+const mapDispatchToProps = dispatch => ({
+    fetchExercise: () => dispatch(apiFetchExercises())
+})
+
+export default connect(null, mapDispatchToProps)(PlanPage)

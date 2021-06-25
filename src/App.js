@@ -1,4 +1,4 @@
-import {Button, createMuiTheme} from "@material-ui/core";
+import {createMuiTheme} from "@material-ui/core";
 import {ThemeProvider} from '@material-ui/core'
 import {BrowserRouter, Switch, Route} from 'react-router-dom'
 import {brown, blueGrey} from '@material-ui/core/colors'
@@ -27,24 +27,31 @@ function App() {
                 <BrowserRouter>
                     <Layout>
                         <Switch>
+
                             <AuthenticatedRoute exact path={'/'}>
-                                <HomePage/>
+                                <CreatePlanPage/>
                             </AuthenticatedRoute>
+
                             <Route path={'/register'}>
                                 <RegisterPage/>
                             </Route>
+
                             <Route path={'/login'}>
                                 <LoginPage/>
                             </Route>
+
                             <AuthenticatedRoute path={'/create'}>
                                 <CreatePlanPage/>
                             </AuthenticatedRoute>
+
                             <AuthenticatedRoute path={'/training'}>
                                 <PlanPage/>
                             </AuthenticatedRoute>
+
                             <AuthenticatedRoute path={'/plan'}>
                                 <PlanViewPage/>
                             </AuthenticatedRoute>
+
                         </Switch>
                     </Layout>
                 </BrowserRouter>

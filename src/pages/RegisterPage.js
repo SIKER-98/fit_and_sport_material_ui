@@ -9,7 +9,6 @@ import {makeStyles} from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import {useHistory} from "react-router-dom";
 import {connect} from "react-redux";
-import userActions from "../redux/actions/userActions";
 import {apiRegister, getAllUsers} from "../redux/thunk/userOperations";
 
 const useStyles = makeStyles((theme) => ({

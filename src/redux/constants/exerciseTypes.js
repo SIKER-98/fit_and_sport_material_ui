@@ -1,0 +1,7 @@
+const EXERCISE_ADD = 'EXERCISE_ADD'
+const EXERCISE_CLEAR = 'EXERCISE_CLEAR'
+
+export default {
+    EXERCISE_ADD,
+    EXERCISE_CLEAR
+}

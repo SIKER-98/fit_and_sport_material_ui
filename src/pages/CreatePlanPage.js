@@ -12,6 +12,8 @@ import {
     Typography
 } from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
+import {connect} from "react-redux";
+
 
 const useStyles = makeStyles(theme => ({
     form: {
@@ -28,18 +30,25 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const CreatePlanPage = () => {
+const CreatePlanPage = ({exercises}) => {
     const classes = useStyles()
 
-    const [state, setState] = React.useState({
-        test1: false,
-        test2: false,
-    });
+    const createState = () => {
+        let newState = {title: '', descriptionL: ''}
 
-    const {test1, test2} = state
+        exercises.forEach(item => {
+            newState = {...newState, [item.exerciseName]: false}
+        })
+
+        return newState
+    }
+
+    const [state, setState] = React.useState(createState());
+
 
     const handleChange = (event) => {
         setState({...state, [event.target.name]: event.target.checked})
+        console.log(state)
     }
 
     const handleSubmit = (e) => {
@@ -79,7 +88,7 @@ const CreatePlanPage = () => {
                                 name={'description'}
                                 variant={'outlined'}
                                 required
-                                fullWidth
+                                // fullWidth
                                 label={'Description'}
                                 multiline
                             />
@@ -89,71 +98,18 @@ const CreatePlanPage = () => {
                             <FormControl componnet={'fieldset'}>
                                 <FormLabel component={'legend'}>Choose your exercises</FormLabel>
                                 <FormGroup className={classes.formGroup}>
-                                    <FormControlLabel
-                                        control={<Checkbox checked={test1} name={'test1'} onChange={handleChange}/>}
-                                        label={'testowy111'}
-                                    />
-                                    <FormControlLabel
-                                        control={<Checkbox checked={test2} name={'test2'} onChange={handleChange}/>}
-                                        label={'testowy2123123'}
-                                    />
-                                    <FormControlLabel
-                                        control={<Checkbox checked={test1} name={'test1'} onChange={handleChange}/>}
-                                        label={'testowy123123121'}
-                                    />
-                                    <FormControlLabel
-                                        control={<Checkbox checked={test2} name={'test2'} onChange={handleChange}/>}
-                                        label={'testowy2  123123123'}
-                                    />
-                                    <FormControlLabel
-                                        control={<Checkbox checked={test1} name={'test1'} onChange={handleChange}/>}
-                                        label={'testowy1 12312323 sdfsdfsdf'}
-                                    />
-                                    <FormControlLabel
-                                        control={<Checkbox checked={test2} name={'test2'} onChange={handleChange}/>}
-                                        label={'testowy2'}
-                                    />
-                                    <FormControlLabel
-                                        control={<Checkbox checked={test1} name={'test1'} onChange={handleChange}/>}
-                                        label={'testowy1'}
-                                    />
-                                    <FormControlLabel
-                                        control={<Checkbox checked={test2} name={'test2'} onChange={handleChange}/>}
-                                        label={'testowy2 fsdfsdf sdfsdfsd sdfsdfs sdfsdf'}
-                                    />
-                                    <FormControlLabel
-                                        control={<Checkbox checked={test1} name={'test1'} onChange={handleChange}/>}
-                                        label={'testowy1'}
-                                    />
-                                    <FormControlLabel
-                                        control={<Checkbox checked={test2} name={'test2'} onChange={handleChange}/>}
-                                        label={'testowy2 testowy2 testowy2 testowy2 testowy2 testowy2 testowy2 testowy2 testowy2 testowy2 testowy2 testowy2 testowy2'}
-                                    />
-                                    <FormControlLabel
-                                        control={<Checkbox checked={test1} name={'test1'} onChange={handleChange}/>}
-                                        label={'testowy1'}
-                                    />
-                                    <FormControlLabel
-                                        control={<Checkbox checked={test2} name={'test2'} onChange={handleChange}/>}
-                                        label={'testowy2'}
-                                    />
-                                    <FormControlLabel
-                                        control={<Checkbox checked={test1} name={'test1'} onChange={handleChange}/>}
-                                        label={'testowy1'}
-                                    />
-                                    <FormControlLabel
-                                        control={<Checkbox checked={test2} name={'test2'} onChange={handleChange}/>}
-                                        label={'testowy2'}
-                                    />
-                                    <FormControlLabel
-                                        control={<Checkbox checked={test1} name={'test1'} onChange={handleChange}/>}
-                                        label={'testowy1'}
-                                    />
-                                    <FormControlLabel
-                                        control={<Checkbox checked={test2} name={'test2'} onChange={handleChange}/>}
-                                        label={'testowy2'}
-                                    />
-
+                                    {exercises?.map(item => (
+                                        <FormControlLabel
+                                            key={item.id}
+                                            control={
+                                                <Checkbox
+                                                    checked={state[item.exerciseName]}
+                                                    name={item.exerciseName}
+                                                    onChange={handleChange}
+                                                />}
+                                            label={item.exerciseName}
+                                        />
+                                    ))}
 
                                 </FormGroup>
                             </FormControl>
@@ -174,4 +130,9 @@ const CreatePlanPage = () => {
     )
 }
 
-export default CreatePlanPage
+const mapStateToProps = state => ({
+    exercises: state.exercise.exerciseList
+})
+
+
+export default connect(mapStateToProps, null)(CreatePlanPage)

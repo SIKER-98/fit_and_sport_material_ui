@@ -8,7 +8,6 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import {
-    AddCircleOutlineOutlined,
     EventNote,
     DirectionsRun,
     SubjectOutlined,
@@ -20,7 +19,6 @@ import {
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import {format} from 'date-fns'
-import Avatar from '@material-ui/core/Avatar'
 import {connect} from "react-redux";
 import userActions from "../redux/actions/userActions";
 
@@ -91,24 +89,6 @@ const Layout = ({children, user, logout}) => {
         },
 
     ];
-
-    const appBarItems = [
-        {
-            text: 'LOGIN',
-            icon: <VpnKey/>,
-            path: '/login'
-        },
-        {
-            text: 'REGISTER',
-            icon: <PersonAdd/>,
-            path: '/register'
-        },
-        {
-            text: 'LOGOUT',
-            icon: <ExitToApp/>,
-            path: '/logout'
-        },
-    ]
 
     return (
         <div className={classes.root}>

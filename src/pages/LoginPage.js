@@ -4,8 +4,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import {Button, Grid, Link, TextField, Typography} from "@material-ui/core";
 import {useHistory} from "react-router-dom";
 import {connect} from "react-redux";
-import store from "../redux/store";
-import {apiLogin, fetchUsers, getAllUsers} from "../redux/thunk/userOperations";
+import {apiLogin, getAllUsers} from "../redux/thunk/userOperations";
 
 const useStyles = makeStyles(theme => ({
     paper: {

@@ -3,7 +3,6 @@ import {connect} from "react-redux";
 import {Redirect} from 'react-router'
 
 const AuthenticatedRoute = (props) => {
-    console.log(props)
     if (props.user.userId>0)
         return <Route {...props}/>
     else

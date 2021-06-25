@@ -1,5 +1,4 @@
 import axios from "axios";
-import userTypes from "../constants/userTypes";
 import userActions from "../actions/userActions";
 
 export const getAllUsers = () => {
