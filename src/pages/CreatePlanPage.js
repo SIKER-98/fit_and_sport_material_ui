@@ -13,6 +13,8 @@ import {
 } from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import {connect} from "react-redux";
+import {apiAddExerciseToPlan, apiCreatePlan} from "../redux/thunk/planOperations";
+import {useHistory} from "react-router-dom";
 
 
 const useStyles = makeStyles(theme => ({
@@ -30,11 +32,12 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const CreatePlanPage = ({exercises}) => {
+const CreatePlanPage = ({exercises, userId, createPlan, addExerciseToPlan}) => {
     const classes = useStyles()
+    const history = useHistory()
 
     const createState = () => {
-        let newState = {title: '', descriptionL: ''}
+        let newState = {title: '', description: ''}
 
         exercises.forEach(item => {
             newState = {...newState, [item.exerciseName]: false}
@@ -46,13 +49,42 @@ const CreatePlanPage = ({exercises}) => {
     const [state, setState] = React.useState(createState());
 
 
-    const handleChange = (event) => {
+    const handleCheck = (event) => {
         setState({...state, [event.target.name]: event.target.checked})
         console.log(state)
     }
 
-    const handleSubmit = (e) => {
+    const handleChange = (event) => {
+        setState({...state, [event.target.name]: event.target.value})
+    }
+
+
+    const handleSubmit = async (e) => {
         e.preventDefault()
+
+        let planId = await createPlan({
+            userId,
+            title: state.title,
+            description: state.description
+        })
+
+        // console.log('values', state.values())
+        Object.entries(state).forEach((entry) => {
+            console.log(entry)
+            if (entry[1] === true) {
+                let exercise = exercises.findIndex(item => item.exerciseName === entry[0])
+                console.log('here2', exercise)
+                if (exercise >= 0)
+                    addExerciseToPlan({
+                        exerciseId: exercises[exercise].id,
+                        planId: planId,
+                        repetitions: 0,
+                        series: 0
+                    })
+            }
+        })
+
+        // history.push('/training')
     }
 
     return (
@@ -80,6 +112,7 @@ const CreatePlanPage = ({exercises}) => {
                                 required
                                 // fullWidth
                                 label={'Title'}
+                                onChange={handleChange}
                             />
                         </Grid>
 
@@ -91,6 +124,7 @@ const CreatePlanPage = ({exercises}) => {
                                 // fullWidth
                                 label={'Description'}
                                 multiline
+                                onChange={handleChange}
                             />
                         </Grid>
 
@@ -105,7 +139,7 @@ const CreatePlanPage = ({exercises}) => {
                                                 <Checkbox
                                                     checked={state[item.exerciseName]}
                                                     name={item.exerciseName}
-                                                    onChange={handleChange}
+                                                    onChange={handleCheck}
                                                 />}
                                             label={item.exerciseName}
                                         />
@@ -131,8 +165,14 @@ const CreatePlanPage = ({exercises}) => {
 }
 
 const mapStateToProps = state => ({
-    exercises: state.exercise.exerciseList
+    exercises: state.exercise.exerciseList,
+    userId: state.user.userId
+})
+
+const mapDispatchToProps = dispatch => ({
+    createPlan: (item) => dispatch(apiCreatePlan(item)),
+    addExerciseToPlan: (item) => dispatch(apiAddExerciseToPlan(item))
 })
 
 
-export default connect(mapStateToProps, null)(CreatePlanPage)
+export default connect(mapStateToProps, mapDispatchToProps)(CreatePlanPage)

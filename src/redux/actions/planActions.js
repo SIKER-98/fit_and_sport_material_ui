@@ -16,9 +16,11 @@ const clear = () => ({
     type: planTypes.PLAN_CLEAR
 })
 
+
 export default {
     add,
     del,
     edit,
-    clear
+    clear,
+
 }

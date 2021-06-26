@@ -1,12 +1,14 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import PlanCard from "../components/PlanCard";
 import Masonry from "react-masonry-css";
-import {Container} from "@material-ui/core";
+import {Container, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import {makeStyles} from "@material-ui/core/styles";
 import {useHistory} from "react-router-dom";
 import {apiFetchExercises} from "../redux/thunk/exerciseOperations";
 import {connect} from "react-redux";
+import {apiDeletePlan, apiEditPlan, apiGetUserPlans} from "../redux/thunk/planOperations";
+import {Edit} from "@material-ui/icons";
 
 const useStyles = makeStyles(theme => ({
     create: {
@@ -14,12 +16,13 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-const PlanPage = ({fetchExercise}) => {
+const PlanPage = ({fetchExercise, getUserPlans, user, plan, deletePlan, editPlan}) => {
     const classes = useStyles()
     const history = useHistory()
 
     useEffect(() => {
         fetchExercise()
+        getUserPlans(user.userId)
     }, [])
 
     const breakpoints = {
@@ -49,31 +52,33 @@ const PlanPage = ({fetchExercise}) => {
                 columnClassName={'my-masonry-grid_column'}
 
             >
-                <div>
-                    <PlanCard/>
-                </div>
-                <div>
-                    <PlanCard/>
-                </div>
-                <div>
-                    <PlanCard/>
-                </div>
-                <div>
-                    <PlanCard/>
-                </div>
-                <div>
-                    <PlanCard/>
-                </div>
-                <div>
-                    <PlanCard/>
-                </div>
+
+                {plan.planList.map(plan => (
+                    <div key={plan.id}>
+                        <PlanCard
+                            title={plan.planName}
+                            description={plan.description}
+                            deleteClick={deletePlan}
+                            editClick={editPlan}
+                            planId={plan.id}
+                        />
+                    </div>
+                ))}
             </Masonry>
         </Container>
     )
 }
 
-const mapDispatchToProps = dispatch => ({
-    fetchExercise: () => dispatch(apiFetchExercises())
+const mapStateToProps = state => ({
+    user: state.user,
+    plan: state.plan
 })
 
-export default connect(null, mapDispatchToProps)(PlanPage)
+const mapDispatchToProps = dispatch => ({
+    fetchExercise: () => dispatch(apiFetchExercises()),
+    getUserPlans: (userId) => dispatch(apiGetUserPlans(userId)),
+    deletePlan: (plan) => dispatch(apiDeletePlan(plan)),
+    editPlan: (plan) => dispatch(apiEditPlan(plan))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(PlanPage)

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Grid from "@material-ui/core/Grid";
 import {
     Box,
@@ -16,55 +16,31 @@ import {
 import {Delete, Edit, KeyboardArrowDown, KeyboardArrowUp} from "@material-ui/icons";
 import Button from "@material-ui/core/Button";
 import {makeStyles} from "@material-ui/core/styles";
+import {connect} from "react-redux";
+import {
+    apiAddExerciseToPlanInfo,
+    apiDelExerciseInPlan,
+    apiEditExerciseInPlan,
+    apiGetPlanExercises
+} from "../redux/thunk/planInfoOperations";
 
-const PlanViewPage = () => {
+const PlanViewPage = ({planInfo, getExercises, addExercise, exerciseList, editExercise, delExercise}) => {
 
-    const plan = {
-        title: 'Training plan title',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum quas, voluptatem! Accusantium aliquid aspernatur consectetur cumque dignissimos eaque eius labore nemo nobis numquam, placeat quo, rerum tenetur! Delectus, molestias, neque.',
-        exercises: [
-            {
-                id: 1,
-                exerciseName: 'exercise 1',
-                description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum quas, voluptatem! Accusantium aliquid aspernatur consectetur cumque dignissimos eaque eius labore nemo nobis numquam, placeat quo, rerum tenetur! Delectus, molestias, neque.',
-                series: 3,
-                repetitions: 3
-            },
-            {
-                id: 2,
-                exerciseName: 'exercise 2',
-                description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum quas, voluptatem! Accusantium aliquid aspernatur consectetur cumque dignissimos eaque eius labore nemo nobis numquam, placeat quo, rerum tenetur! Delectus, molestias, neque.',
-                series: 3,
-                repetitions: 3
-            },
-            {
-                id: 3,
-                exerciseName: 'exercise 3',
-                description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum quas, voluptatem! Accusantium aliquid aspernatur consectetur cumque dignissimos eaque eius labore nemo nobis numquam, placeat quo, rerum tenetur! Delectus, molestias, neque.',
-                series: 3,
-                repetitions: 3
-            },
-            {
-                id: 4,
-                exerciseName: 'exercise 4',
-                description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum quas, voluptatem! Accusantium aliquid aspernatur consectetur cumque dignissimos eaque eius labore nemo nobis numquam, placeat quo, rerum tenetur! Delectus, molestias, neque.',
-                series: 3,
-                repetitions: 3
-            }
-        ]
-    }
 
+    useEffect(() => {
+        getExercises(planInfo.planId)
+    }, [])
 
     return (
         <Grid container spacing={2}>
             <Grid item xs={12}>
                 <Typography component={'h1'} variant={'h5'}>
-                    {plan.title}
+                    {planInfo.title}
                 </Typography>
             </Grid>
             <Grid item xs={12}>
                 <Typography component={'p'} variant={'body2'}>
-                    {plan.description}
+                    {planInfo.description}
                 </Typography>
             </Grid>
 
@@ -82,14 +58,22 @@ const PlanViewPage = () => {
                         </TableHead>
 
                         <TableBody>
-                            {plan.exercises.map((row, k) => (
-                                <Row key={k} row={row}/>
+                            {planInfo.exerciseList.map((row, k) => (
+                                <Row key={k}
+                                     row={row}
+                                     edit={editExercise}
+                                     del={delExercise}
+                                />
                             ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
             </Grid>
-            <DialogExerciseAdd/>
+            <DialogExerciseAdd
+                addExercise={addExercise}
+                planId={planInfo.planId}
+                exercises={exerciseList}
+            />
         </Grid>
     )
 }
@@ -111,10 +95,16 @@ const Row = (props) => {
                 <TableCell component={'th'} scope={'row'}>{row.series}</TableCell>
                 <TableCell component={'th'} scope={'row'}>{row.repetitions}</TableCell>
                 <TableCell component={'th'} scope={'row'}>
-                    <DialogExerciseModify/>
-                    <IconButton>
+
+                    <DialogExerciseModify
+                        editExercise={props.edit}
+                        planExerciseId={row.planExerciseId}
+                    />
+
+                    <IconButton onClick={() => props.del(row.planExerciseId)}>
                         <Delete/>
                     </IconButton>
+
                 </TableCell>
             </TableRow>
             <TableRow>
@@ -168,7 +158,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DialogExerciseModify = () => {
+const DialogExerciseModify = ({editExercise, planExerciseId}) => {
     const classes = useStyles()
     const [open, setOpen] = useState(false)
     const [series, setSeries] = useState(0)
@@ -182,7 +172,17 @@ const DialogExerciseModify = () => {
         setOpen(true)
     }
 
-    const handleClickClose = () => {
+    const handleClickClose = (save) => {
+        if (save) {
+            console.log('here2')
+            editExercise({
+                planExerciseId,
+                series,
+                repetitions
+            })
+        }
+        console.log('here3')
+
         setOpen(false)
     }
 
@@ -201,6 +201,7 @@ const DialogExerciseModify = () => {
                         type={'number'}
                         required
                         label={'Series'}
+                        onChange={(e) => setSeries(e.target.value)}
                     />
 
                     <TextField
@@ -210,14 +211,15 @@ const DialogExerciseModify = () => {
                         type={'number'}
                         required
                         label={'Repetitions'}
+                        onChange={(e) => setRepetitions(e.target.value)}
                     />
                 </DialogContent>
 
                 <DialogActions>
-                    <Button onClick={handleClickClose} color={'primary'}>
+                    <Button onClick={() => handleClickClose(false)} color={'primary'}>
                         Cancel
                     </Button>
-                    <Button onClick={handleClickClose} color={'primary'}>
+                    <Button onClick={() => handleClickClose(true)} color={'primary'}>
                         Save
                     </Button>
                 </DialogActions>
@@ -226,7 +228,7 @@ const DialogExerciseModify = () => {
     )
 }
 
-const DialogExerciseAdd = ({exercises}) => {
+const DialogExerciseAdd = ({exercises, addExercise, planId}) => {
     const classes = useStyles()
     const [open, setOpen] = useState(false);
     const [exercise, setExercise] = useState(null)
@@ -242,7 +244,23 @@ const DialogExerciseAdd = ({exercises}) => {
         setOpen(true)
     }
 
-    const handleClickClose = () => {
+    const handleClickClose = (save) => {
+        console.log('exercise:', exercise)
+        console.log('series: ', series)
+        console.log('repetitions:', repetitions)
+
+        if (save) {
+            const exerciseName = exercises.find(item => item.id === exercise)?.exerciseName
+
+            addExercise({
+                exerciseId: exercise,
+                planId,
+                repetitions,
+                series,
+                exerciseName
+            })
+        }
+
         setOpen(false)
     }
 
@@ -269,9 +287,16 @@ const DialogExerciseAdd = ({exercises}) => {
                                 <MenuItem value="">
                                     <em>None</em>
                                 </MenuItem>
-                                <MenuItem value={10}>Exercise 1</MenuItem>
-                                <MenuItem value={20}>Exercise 2</MenuItem>
-                                <MenuItem value={30}>Exercise 3</MenuItem>
+
+                                {exercises.map(exercise => (
+                                    <MenuItem value={exercise.id}>
+                                        {exercise.exerciseName}
+                                    </MenuItem>
+                                ))}
+
+                                {/*<MenuItem value={10}>Exercise 1</MenuItem>*/}
+                                {/*<MenuItem value={20}>Exercise 2</MenuItem>*/}
+                                {/*<MenuItem value={30}>Exercise 3</MenuItem>*/}
                             </Select>
                         </FormControl>
                         <div>
@@ -282,6 +307,7 @@ const DialogExerciseAdd = ({exercises}) => {
                                 type={'number'}
                                 required
                                 label={'Series'}
+                                onChange={(e) => setSeries(e.target.value)}
                             />
 
                             <TextField
@@ -291,15 +317,18 @@ const DialogExerciseAdd = ({exercises}) => {
                                 type={'number'}
                                 required
                                 label={'Repetitions'}
+                                onChange={
+                                    (e) => setRepetitions(e.target.value)
+                                }
                             />
                         </div>
                     </form>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClickClose} color={'primary'}>
+                    <Button onClick={() => handleClickClose(false)} color={'primary'}>
                         Cancel
                     </Button>
-                    <Button onClick={handleClickClose} color={'primary'}>
+                    <Button onClick={() => handleClickClose(true)} color={'primary'}>
                         Add
                     </Button>
                 </DialogActions>
@@ -308,4 +337,17 @@ const DialogExerciseAdd = ({exercises}) => {
     )
 }
 
-export default PlanViewPage
+
+const mapStateToProps = state => ({
+    planInfo: state.planInfo,
+    exerciseList: state.exercise.exerciseList
+})
+
+const mapDispatchToProps = dispatch => ({
+    getExercises: item => dispatch(apiGetPlanExercises(item)),
+    addExercise: item => dispatch(apiAddExerciseToPlanInfo(item)),
+    editExercise: item => dispatch(apiEditExerciseInPlan(item)),
+    delExercise: item => dispatch(apiDelExerciseInPlan(item))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(PlanViewPage)

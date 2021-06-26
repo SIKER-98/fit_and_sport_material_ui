@@ -6,7 +6,7 @@ export const apiFetchExercises = () =>
         await axios.get(api + 'api/exercises')
             .then(res => {
                 dispatch(exerciseActions.clear())
-                console.log(res)
+                console.log('fetchExercise: ',res.data)
                 res.data?.map(item => {
                     dispatch(exerciseActions.add(item))
                 })
