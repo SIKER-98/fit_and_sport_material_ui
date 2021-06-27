@@ -69,3 +69,49 @@ export const apiDelExerciseInPlan = (planExerciseId) =>
                 console.log(e)
             })
     }
+
+export const apiGetExerciseStatistic = (planExerciseId) =>
+    async (dispatch, getState, api) => {
+        await axios.get(api + 'planExercises/statistics', {params: {planExerciseId}})
+            .then(res => {
+                console.log('ExerciseStats:', res.data)
+                dispatch(planInfoActions.clearStatistic({planExerciseId}))
+                res.data.forEach(item => {
+                    dispatch(planInfoActions.addStatistic({planExerciseId, statistic: item}))
+                })
+            })
+            .catch(e => {
+                console.log(e)
+            })
+    }
+
+export const apiAddExerciseStatistic = ({series, repetitions, planExerciseId}) =>
+    async (dispatch, getState, api) => {
+        await axios.post(api + 'exerciseStatistics/add', {
+            exerciseStatistic: {
+                series: series * 1,
+                repetitions: repetitions * 1,
+            },
+            planExerciseId
+        })
+            .then(res => {
+                console.log("Stat add:", res.data)
+                dispatch(planInfoActions.addStatistic({planExerciseId, statistic: res.data}))
+            })
+            .catch(e => {
+                console.log(e)
+            })
+    }
+
+export const apiDelExerciseStatistic = ({exerciseStatisticId, planExerciseId}) =>
+    async (dispatch, getState, api) => {
+        console.log(exerciseStatisticId)
+        await axios.delete(api + 'exerciseStatistics/delete', {params: {exerciseStatisticId}})
+            .then(res => {
+                console.log('deleted stat:', exerciseStatisticId)
+                dispatch(planInfoActions.delStatistic({exerciseStatisticId, planExerciseId}))
+            })
+            .catch(e => {
+                console.log(e)
+            })
+    }

@@ -18,14 +18,25 @@ import Button from "@material-ui/core/Button";
 import {makeStyles} from "@material-ui/core/styles";
 import {connect} from "react-redux";
 import {
+    apiAddExerciseStatistic,
     apiAddExerciseToPlanInfo,
-    apiDelExerciseInPlan,
-    apiEditExerciseInPlan,
+    apiDelExerciseInPlan, apiDelExerciseStatistic,
+    apiEditExerciseInPlan, apiGetExerciseStatistic,
     apiGetPlanExercises
 } from "../redux/thunk/planInfoOperations";
 import {apiGetStatistic} from "../redux/thunk/exerciseStatisticOperations";
 
-const PlanViewPage = ({planInfo, getExercises, addExercise, exerciseList, editExercise, delExercise, getStatistic}) => {
+const PlanViewPage = ({
+                          planInfo,
+                          getExercises,
+                          addExercise,
+                          exerciseList,
+                          editExercise,
+                          delExercise,
+                          getStatistic,
+                          addStat,
+                          delStat
+                      }) => {
 
 
     useEffect(() => {
@@ -70,6 +81,9 @@ const PlanViewPage = ({planInfo, getExercises, addExercise, exerciseList, editEx
                                      row={row}
                                      edit={editExercise}
                                      del={delExercise}
+                                     addStat={addStat}
+                                     delStat={delStat}
+                                     planExerciseId={row.planExerciseId}
                                 />
                             ))}
                         </TableBody>
@@ -133,20 +147,46 @@ const Row = (props) => {
                                         <TableCell>Date</TableCell>
                                         <TableCell>Series</TableCell>
                                         <TableCell>Repetitions</TableCell>
+                                        <TableCell>Actions</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {row.statistic.map(historyRow => (
-                                        <TableRow key={historyRow.date}>
+                                        <TableRow key={historyRow.id}>
                                             <TableCell component={'th'} scope={'row'}>
-                                                {historyRow.date}
+                                                {new Date(historyRow.dateTime).toLocaleString()}
                                             </TableCell>
                                             <TableCell>{historyRow.series}</TableCell>
                                             <TableCell>{historyRow.repetitions}</TableCell>
+                                            <TableCell>
+                                                <DialogStatAdd
+                                                    prevSeries={historyRow.series}
+                                                    prevRepetitions={historyRow.repetitions}
+                                                    planExerciseId={historyRow.planExerciseId}
+                                                    editStat={props.editStat}
+                                                    variant={'EDIT'}
+                                                />
+
+                                                <IconButton onClick={
+                                                    () => props.delStat({
+                                                        exerciseStatisticId: historyRow.id,
+                                                        planExerciseId: props.planExerciseId
+                                                    })}
+                                                >
+                                                    <Delete/>
+                                                </IconButton>
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
                             </Table>
+                            <DialogStatAdd
+                                prevSeries={1}
+                                prevRepetitions={1}
+                                planExerciseId={row.planExerciseId}
+                                addStat={props.addStat}
+                                variant={'ADD'}
+                            />
                         </Box>
                     </Collapse>
                 </TableCell>
@@ -157,16 +197,98 @@ const Row = (props) => {
     )
 }
 
-const useStyles = makeStyles((theme) => ({
-    container: {
-        display: 'flex',
-        flexWrap: 'wrap',
-    },
-    formControl: {
-        margin: theme.spacing(2),
-        minWidth: 350,
-    },
-}));
+const DialogStatAdd = ({variant, prevSeries, prevRepetitions, planExerciseId, addStat, editStat}) => {
+    // const classes = useStyles()
+    const [open, setOpen] = useState(false)
+    const [series, setSeries] = useState(prevSeries)
+    const [repetitions, setRepetitions] = useState(prevRepetitions)
+
+    const handleClickClose = (save) => {
+        if (save) {
+            if (variant === 'ADD') {
+                addStat({
+                    series,
+                    repetitions,
+                    planExerciseId
+                })
+            } else if (variant === 'EDIT') {
+
+            }
+        }
+        setOpen(false)
+    }
+
+    return (
+        <>
+            {variant === 'ADD' &&
+            <Button
+                fullWidth
+                color={'secondary'}
+                variant={'contained'}
+                onClick={() => setOpen(true)}
+            >
+                Add statistic
+            </Button>
+            }
+
+            {variant === 'EDIT' &&
+            <IconButton onClick={() => setOpen(true)}>
+                <Edit/>
+            </IconButton>
+            }
+
+            <Dialog disableBackdropClick disableEscapeKeyDown open={open} onClose={handleClickClose}>
+                <DialogTitle>Add Statistic</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoComplete={'off'}
+                        name={'series'}
+                        variant={'standard'}
+                        type={'number'}
+                        required
+                        label={'Series'}
+                        defaultValue={prevSeries}
+                        onChange={(e) => setSeries(e.target.value)}
+                    />
+
+                    <TextField
+                        autoComplete={'off'}
+                        name={'repetitions'}
+                        variant={'standard'}
+                        type={'number'}
+                        required
+                        label={'Repetitions'}
+                        defaultValue={prevRepetitions}
+                        onChange={(e) => setRepetitions(e.target.value)}
+                    />
+                </DialogContent>
+
+                <DialogActions>
+                    <Button onClick={() => handleClickClose(false)} color={'primary'}>
+                        Cancel
+                    </Button>
+                    <Button onClick={() => handleClickClose(true)} color={'primary'}>
+                        Save
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </>
+    )
+}
+
+
+const useStyles = makeStyles((theme) => (
+    {
+        container: {
+            display: 'flex',
+            flexWrap: 'wrap',
+        },
+        formControl: {
+            margin: theme.spacing(2),
+            minWidth: 350,
+        },
+    }
+))
 
 const DialogExerciseModify = ({editExercise, planExerciseId, prevSeries, prevRepetitions, exerciseId}) => {
     // const classes = useStyles()
@@ -358,7 +480,10 @@ const mapDispatchToProps = dispatch => ({
     addExercise: item => dispatch(apiAddExerciseToPlanInfo(item)),
     editExercise: item => dispatch(apiEditExerciseInPlan(item)),
     delExercise: item => dispatch(apiDelExerciseInPlan(item)),
-    getStatistic: item => dispatch(apiGetStatistic(item))
+
+    getStatistic: item => dispatch(apiGetExerciseStatistic(item)),
+    addStat: item => dispatch(apiAddExerciseStatistic(item)),
+    delStat: item => dispatch(apiDelExerciseStatistic(item))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(PlanViewPage)

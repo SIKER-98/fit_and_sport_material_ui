@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => {
         },
         toolbar: {
             ...theme.mixins.toolbar,
-            marginTop: 150
+            marginTop: 200
         },
         avatar: {
             marginLeft: theme.spacing(2),

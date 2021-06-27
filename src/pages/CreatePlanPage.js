@@ -74,13 +74,12 @@ const CreatePlanPage = ({exercises, userId, createPlan, addExerciseToPlan}) => {
                 let exercise = exercises.findIndex(item => item.exerciseName === entry[0])
                 console.log('here2', exercise)
                 console.log(planId)
-
                 if (exercise >= 0)
                     addExerciseToPlan({
                         exerciseId: exercises[exercise].id,
                         planId: planId,
-                        repetitions: 0,
-                        series: 0
+                        repetitions: 1,
+                        series: 1
                     })
             }
         })
