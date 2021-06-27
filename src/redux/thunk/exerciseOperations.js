@@ -3,7 +3,7 @@ import exerciseActions from "../actions/exerciseActions";
 
 export const apiFetchExercises = () =>
     async (dispatch, getState, api) => {
-        await axios.get(api + 'api/exercises')
+        await axios.get(api + 'exercises')
             .then(res => {
                 dispatch(exerciseActions.clear())
                 console.log('fetchExercise: ',res.data)

@@ -15,6 +15,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import {connect} from "react-redux";
 import {apiAddExerciseToPlan, apiCreatePlan} from "../redux/thunk/planOperations";
 import {useHistory} from "react-router-dom";
+import {apiAddExerciseToPlanInfo} from "../redux/thunk/planInfoOperations";
 
 
 const useStyles = makeStyles(theme => ({
@@ -68,12 +69,12 @@ const CreatePlanPage = ({exercises, userId, createPlan, addExerciseToPlan}) => {
             description: state.description
         })
 
-        // console.log('values', state.values())
         Object.entries(state).forEach((entry) => {
-            console.log(entry)
             if (entry[1] === true) {
                 let exercise = exercises.findIndex(item => item.exerciseName === entry[0])
                 console.log('here2', exercise)
+                console.log(planId)
+
                 if (exercise >= 0)
                     addExerciseToPlan({
                         exerciseId: exercises[exercise].id,
@@ -172,6 +173,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     createPlan: (item) => dispatch(apiCreatePlan(item)),
     addExerciseToPlan: (item) => dispatch(apiAddExerciseToPlan(item))
+    // addExerciseToPlan: (item) => dispatch(apiAddExerciseToPlanInfo(item))
 })
 
 

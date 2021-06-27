@@ -3,7 +3,7 @@ import planInfoActions from "../actions/planInfoActions";
 
 export const apiGetPlanExercises = (planId) =>
     async (dispatch, getState, api) => {
-        await axios.get(api + 'api/plans/getPlanExercises', {params: {planId}})
+        await axios.get(api + 'plans/getPlanExercises', {params: {planId}})
             .then(res => {
                 console.log('PlanExercise:', res.data)
 
@@ -20,10 +20,14 @@ export const apiGetPlanExercises = (planId) =>
 
 export const apiAddExerciseToPlanInfo = ({exerciseId, planId, repetitions, series, exerciseName}) =>
     async (dispatch, getState, api) => {
-        await axios.post(api + 'api/planExercise/add', {},
-            {
-                params: {exerciseId, planId, repetitions, series}
-            })
+        await axios.post(api + 'planExercises/add', {
+            planExercise: {
+                series: series * 1,
+                repetitions: repetitions * 1,
+            },
+            planId,
+            exerciseId,
+        })
             .then(res => {
                 console.log('AddToPlan:', res.data)
                 // dispatch(planInfoActions.add({exerciseId, planId, repetitions, series, exerciseName}))
@@ -35,11 +39,16 @@ export const apiAddExerciseToPlanInfo = ({exerciseId, planId, repetitions, serie
             })
     }
 
-export const apiEditExerciseInPlan = ({planExerciseId, series, repetitions}) =>
+export const apiEditExerciseInPlan = ({planExerciseId, series, repetitions, exerciseId}) =>
     async (dispatch, getState, api) => {
-        await axios.put(api + 'api/planExercise/update', {},
-            {params: {planExerciseId, series, repetitions}}
-        )
+        await axios.put(api + 'planExercises/update', {
+            planExercise: {
+                id: planExerciseId,
+                series: series * 1,
+                repetitions: repetitions * 1,
+            },
+            exerciseId
+        })
             .then(res => {
                 console.log('Edited:', res.data)
                 dispatch(planInfoActions.edit({planExerciseId, series, repetitions}))
@@ -51,7 +60,7 @@ export const apiEditExerciseInPlan = ({planExerciseId, series, repetitions}) =>
 
 export const apiDelExerciseInPlan = (planExerciseId) =>
     async (dispatch, getState, api) => {
-        await axios.delete(api + 'api/planExercise/delete', {params: {planExerciseId}})
+        await axios.delete(api + 'planExercises/delete', {params: {planExercise: planExerciseId}})
             .then(res => {
                 console.log('deleted:', res.data)
                 dispatch(planInfoActions.del(planExerciseId))

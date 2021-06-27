@@ -30,7 +30,7 @@ const PlanViewPage = ({planInfo, getExercises, addExercise, exerciseList, editEx
 
     useEffect(() => {
         getExercises(planInfo.planId)
-    },[])
+    }, [])
 
     useEffect(() => {
         planInfo.exerciseList.forEach(item => {
@@ -105,6 +105,7 @@ const Row = (props) => {
 
                     <DialogExerciseModify
                         editExercise={props.edit}
+                        exerciseId={row.exerciseId}
                         planExerciseId={row.planExerciseId}
                         prevSeries={row.series}
                         prevRepetitions={row.repetitions}
@@ -167,7 +168,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DialogExerciseModify = ({editExercise, planExerciseId, prevSeries, prevRepetitions}) => {
+const DialogExerciseModify = ({editExercise, planExerciseId, prevSeries, prevRepetitions, exerciseId}) => {
     // const classes = useStyles()
     const [open, setOpen] = useState(false)
     const [series, setSeries] = useState(0)
@@ -186,7 +187,8 @@ const DialogExerciseModify = ({editExercise, planExerciseId, prevSeries, prevRep
             editExercise({
                 planExerciseId,
                 series,
-                repetitions
+                repetitions,
+                exerciseId
             })
         }
         setOpen(false)
