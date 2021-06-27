@@ -37,7 +37,7 @@ const clearStatistic = (item) => ({
     type: planInfoTypes.EXERCISE_STAT_CLEAR, item
 })
 
-export default {
+const exportedObject={
     add,
     del,
     clear,
@@ -48,3 +48,5 @@ export default {
     editStatistic,
     clearStatistic
 }
+
+export default exportedObject

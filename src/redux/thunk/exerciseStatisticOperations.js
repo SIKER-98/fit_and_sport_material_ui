@@ -7,7 +7,7 @@ export const apiGetStatistic = (exerciseStatisticsId) =>
             .then(res => {
                 console.log('Statistic:', res.data)
 
-                res.data.map(item => {
+                res.data.forEach(item => {
                     dispatch(planInfoActions.addStatistic({
                         exerciseId: exerciseStatisticsId,
                         statistic: item

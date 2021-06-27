@@ -7,7 +7,7 @@ export const apiGetRuns = (userId) =>
             .then(res => {
                 console.log('RunResults:', res.data)
                 dispatch(runActions.clear())
-                res.data.map(item => {
+                res.data.forEach(item => {
                     dispatch(runActions.add(item))
                 })
             })

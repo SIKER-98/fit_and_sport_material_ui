@@ -7,7 +7,7 @@ export const apiFetchExercises = () =>
             .then(res => {
                 dispatch(exerciseActions.clear())
                 console.log('fetchExercise: ',res.data)
-                res.data?.map(item => {
+                res.data?.forEach(item => {
                     dispatch(exerciseActions.add(item))
                 })
             })

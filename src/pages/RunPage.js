@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {
     Dialog, DialogActions, DialogContent, DialogTitle,
-    Icon,
     IconButton,
     Paper,
     Table,
@@ -13,11 +12,24 @@ import {
     TableRow, TextField
 } from "@material-ui/core";
 import {connect} from "react-redux";
-import {apiGetRuns, apiRunAdd, apiRunDelete, apiRunUpdate} from "../redux/thunk/runOperations";
+import { apiRunAdd, apiRunDelete, apiRunUpdate} from "../redux/thunk/runOperations";
 import {Delete, Edit} from "@material-ui/icons";
 import Button from "@material-ui/core/Button";
 
-const RunPage = ({runs, user, getRuns, addRun, delRun, editRun}) => {
+import {
+    ArgumentAxis,
+    ValueAxis,
+    Chart,
+    SplineSeries,
+    AreaSeries,
+    Legend,
+    Title,
+    Tooltip
+} from '@devexpress/dx-react-chart-material-ui';
+import {ValueScale, EventTracker} from '@devexpress/dx-react-chart';
+
+
+const RunPage = ({runs, user, addRun, delRun, editRun}) => {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -35,67 +47,102 @@ const RunPage = ({runs, user, getRuns, addRun, delRun, editRun}) => {
     };
 
     return (
-        <Paper>
-            <DialogRunAdd
-                variant={'ADD'}
-                userId={user.userId}
-                addRun={addRun}
-            />
+        <>
+            <Paper>
+                <DialogRunAdd
+                    variant={'ADD'}
+                    userId={user.userId}
+                    addRun={addRun}
+                />
 
-            <TableContainer>
-                <Table stickyHeader>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell align={"center"}>Id</TableCell>
-                            <TableCell align={'center'}>Time</TableCell>
-                            <TableCell align={'center'}>Distance</TableCell>
-                            <TableCell align={'center'}>Actions</TableCell>
+                <TableContainer>
+                    <Table stickyHeader>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell align={"center"}>Id</TableCell>
+                                <TableCell align={'center'}>Time</TableCell>
+                                <TableCell align={'center'}>Distance</TableCell>
+                                <TableCell align={'center'}>Actions</TableCell>
 
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {runs.runStatistics.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                            return (
-                                <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                                    <TableCell align={'center'}>{index}</TableCell>
-                                    <TableCell
-                                        align={'center'}>{new Date(row.time * 1000).toISOString().substr(11, 8)}</TableCell>
-                                    <TableCell align={'center'}>{(row.distance / 1000).toFixed(3)} km</TableCell>
-                                    <TableCell align={'center'}>
-                                        <DialogRunAdd
-                                            variant={'EDIT'}
-                                            userId={user.userId}
-                                            editRun={editRun}
-                                            runScoreId={row.id}
-                                            distance={row.distance}
-                                            time={row.time}
-                                        />
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {runs.runStatistics.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
+                                return (
+                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                                        <TableCell align={'center'}>{index}</TableCell>
+                                        <TableCell
+                                            align={'center'}>{new Date(row.time * 1000).toISOString().substr(11, 8)}</TableCell>
+                                        <TableCell align={'center'}>{(row.distance / 1000).toFixed(3)} km</TableCell>
+                                        <TableCell align={'center'}>
+                                            <DialogRunAdd
+                                                variant={'EDIT'}
+                                                userId={user.userId}
+                                                editRun={editRun}
+                                                runScoreId={row.id}
+                                                distance={row.distance}
+                                                time={row.time}
+                                            />
 
-                                        <IconButton onClick={() => delRun({runScoreId: row.id})}>
-                                            <Delete/>
-                                        </IconButton>
+                                            <IconButton onClick={() => delRun({runScoreId: row.id})}>
+                                                <Delete/>
+                                            </IconButton>
 
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <TablePagination
-                rowsPerPageOptions={[10, 25, 100]}
-                component="div"
-                count={runs.runStatistics.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onChangePage={handleChangePage}
-                onChangeRowsPerPage={handleChangeRowsPerPage}
-            />
-        </Paper>
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                <TablePagination
+                    rowsPerPageOptions={[10, 25, 100]}
+                    component="div"
+                    count={runs.runStatistics.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onChangePage={handleChangePage}
+                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                />
+            </Paper>
+
+            <Paper>
+                <Chart
+                    data={runs.runStatistics}
+                >
+                    <ValueScale name="distance"/>
+                    <ValueScale name="time"/>
+
+                    <ArgumentAxis/>
+                    <ValueAxis scaleName="time" showGrid={false} showLine showTicks/>
+                    <ValueAxis scaleName="distance" position="right" showGrid={true} showLine showTicks/>
+
+                    <AreaSeries
+                        name="Distance"
+                        valueField="distance"
+                        argumentField="id"
+                        scaleName="distance"
+                    />
+
+                    <SplineSeries
+                        name="Time"
+                        valueField="time"
+                        argumentField="id"
+                        scaleName="time"
+                    />
+
+                    <EventTracker/>
+                    <Tooltip/>
+
+                    <Legend/>
+                    <Title text={'Your Running Results'}/>
+                </Chart>
+            </Paper>
+        </>
     )
 }
 
-const DialogRunAdd = ({variant, userId, addRun, editRun, time, distance}) => {
+const DialogRunAdd = ({variant, userId, addRun, editRun, time, distance, runScoreId}) => {
     const [open, setOpen] = useState(false)
     const [newTime, setTime] = useState({
         hours: 0,
@@ -104,22 +151,31 @@ const DialogRunAdd = ({variant, userId, addRun, editRun, time, distance}) => {
     })
     const [newDistance, setDistance] = useState(0)
 
-    const handleChange = (event) => {
-        console.log(event.target.value)
-    }
-
-    const handleClickOpen = () => {
-        setOpen(true)
-    }
+    // const handleChange = (event) => {
+    //     console.log(event.target.value)
+    // }
+    //
+    // const handleClickOpen = () => {
+    //     setOpen(true)
+    // }
 
     const handleClickClose = (save) => {
         if (save) {
             console.log(newTime)
-            addRun({
-                userId,
-                distance: newDistance,
-                time: (newTime.hours * 3600 + newTime.minutes * 60 + newTime.seconds)
-            })
+            if (variant === 'ADD') {
+                addRun({
+                    userId,
+                    distance: newDistance,
+                    time: (newTime.hours * 3600 + newTime.minutes * 60 + newTime.seconds)
+                })
+            } else if (variant === 'EDIT') {
+                editRun({
+                    userId,
+                    runScoreId,
+                    distance: newDistance,
+                    time: (newTime.hours * 3600 + newTime.minutes * 60 + newTime.seconds)
+                })
+            }
         }
 
         setOpen(false)

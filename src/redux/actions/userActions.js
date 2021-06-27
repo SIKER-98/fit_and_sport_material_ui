@@ -8,7 +8,9 @@ const logout = () => ({
     type: types.USER_LOGOUT
 })
 
-export default {
+const exportedObject= {
     login,
     logout,
 }
+
+export default exportedObject

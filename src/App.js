@@ -5,7 +5,6 @@ import {brown, blueGrey} from '@material-ui/core/colors'
 import Layout from './components/Layout'
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import HomePage from "./pages/HomePage";
 import CreatePlanPage from "./pages/CreatePlanPage";
 import PlanPage from "./pages/PlanPage";
 import PlanViewPage from "./pages/PlanViewPage";

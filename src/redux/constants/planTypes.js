@@ -8,7 +8,7 @@ const PLAN_EXERCISE_DELETE = 'PLAN_EXERCISE_DELETE'
 const PLAN_EXERCISE_EDIT = 'PLAN_EXERCISE_EDIT'
 const PLAN_EXERCISE_CLEAR = 'PLAN_EXERCISE_CLEAR'
 
-export default {
+const exportedObject={
     PLAN_ADD,
     PLAN_DELETE,
     PLAN_EDIT,
@@ -19,3 +19,5 @@ export default {
     PLAN_EXERCISE_EDIT,
     PLAN_EXERCISE_CLEAR,
 }
+
+export default exportedObject

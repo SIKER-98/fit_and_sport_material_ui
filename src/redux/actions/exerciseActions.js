@@ -8,7 +8,9 @@ const clear = () => ({
     type: exerciseTypes.EXERCISE_CLEAR
 })
 
-export default {
+const exportedObject = {
     add,
     clear
 }
+
+export default exportedObject

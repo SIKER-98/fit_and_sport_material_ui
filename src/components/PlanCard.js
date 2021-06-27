@@ -11,7 +11,7 @@ import {
     Typography
 } from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
-import {Edit, Visibility} from '@material-ui/icons'
+import {Edit} from '@material-ui/icons'
 import Button from "@material-ui/core/Button";
 import {useHistory} from "react-router-dom";
 import planInfoActions from "../redux/actions/planInfoActions";
@@ -80,18 +80,18 @@ const PlanCard = ({title, description, deleteClick, editClick, planId, planInfoI
 
 // const DialogPlanModify = ({title, description, editPlan, planId}) => {
 const DialogPlanModify = (props) => {
-    const classes = useStyles()
+    // const classes = useStyles()
     const [open, setOpen] = useState(false)
     const [title, setTitle] = useState(props.title)
     const [description, setDescription] = useState(props.description)
 
-    const handleChange = (event) => {
-        console.log(event.target.value)
-    }
-
-    const handleClickOpen = () => {
-        setOpen(true)
-    }
+    // const handleChange = (event) => {
+    //     console.log(event.target.value)
+    // }
+    //
+    // const handleClickOpen = () => {
+    //     setOpen(true)
+    // }
 
     const handleClickClose = (save) => {
         if (save) {

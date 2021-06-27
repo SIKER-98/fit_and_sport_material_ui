@@ -9,7 +9,7 @@ const EXERCISE_STAT_DEL = 'EXERCISE_STAT_DEL'
 const EXERCISE_STAT_EDIT = 'EXERCISE_STAT_EDIT'
 const EXERCISE_STAT_CLEAR = 'EXERCISE_STAT_CLEAR'
 
-export default {
+const exportedObject={
     PLAN_INFO_ADD,
     PLAN_INFO_DEL,
     PLAN_INFO_CLEAR,
@@ -21,3 +21,5 @@ export default {
     EXERCISE_STAT_EDIT,
     EXERCISE_STAT_CLEAR
 }
+
+export default exportedObject

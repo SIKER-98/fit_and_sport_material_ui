@@ -1,14 +1,13 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import PlanCard from "../components/PlanCard";
 import Masonry from "react-masonry-css";
-import {Container, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField} from "@material-ui/core";
+import {Container} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import {makeStyles} from "@material-ui/core/styles";
 import {useHistory} from "react-router-dom";
 import {apiFetchExercises} from "../redux/thunk/exerciseOperations";
 import {connect} from "react-redux";
 import {apiDeletePlan, apiEditPlan, apiGetUserPlans} from "../redux/thunk/planOperations";
-import {Edit} from "@material-ui/icons";
 import {apiGetRuns} from "../redux/thunk/runOperations";
 
 const useStyles = makeStyles(theme => ({
@@ -25,7 +24,7 @@ const PlanPage = ({fetchExercise, getUserPlans, user, plan, deletePlan, editPlan
         fetchExercise()
         getUserPlans(user.userId)
         getRuns(user.userId)
-    }, [])
+    },[])
 
     const breakpoints = {
         default: 3,

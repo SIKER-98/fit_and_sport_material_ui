@@ -84,7 +84,7 @@ const CreatePlanPage = ({exercises, userId, createPlan, addExerciseToPlan}) => {
             }
         })
 
-        // history.push('/training')
+        history.push('/training')
     }
 
     return (

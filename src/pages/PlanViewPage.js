@@ -30,7 +30,7 @@ const PlanViewPage = ({planInfo, getExercises, addExercise, exerciseList, editEx
 
     useEffect(() => {
         getExercises(planInfo.planId)
-    }, [])
+    },[])
 
     useEffect(() => {
         planInfo.exerciseList.forEach(item => {
@@ -106,6 +106,8 @@ const Row = (props) => {
                     <DialogExerciseModify
                         editExercise={props.edit}
                         planExerciseId={row.planExerciseId}
+                        prevSeries={row.series}
+                        prevRepetitions={row.repetitions}
                     />
 
                     <IconButton onClick={() => props.del(row.planExerciseId)}>
@@ -133,7 +135,7 @@ const Row = (props) => {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {row.statistic.map(historyRow=>(
+                                    {row.statistic.map(historyRow => (
                                         <TableRow key={historyRow.date}>
                                             <TableCell component={'th'} scope={'row'}>
                                                 {historyRow.date}
@@ -165,31 +167,28 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DialogExerciseModify = ({editExercise, planExerciseId}) => {
-    const classes = useStyles()
+const DialogExerciseModify = ({editExercise, planExerciseId, prevSeries, prevRepetitions}) => {
+    // const classes = useStyles()
     const [open, setOpen] = useState(false)
     const [series, setSeries] = useState(0)
     const [repetitions, setRepetitions] = useState(0)
 
-    const handleChange = (event) => {
-        console.log(event.target.value)
-    }
-
-    const handleClickOpen = () => {
-        setOpen(true)
-    }
+    // const handleChange = (event) => {
+    //     console.log(event.target.value)
+    // }
+    //
+    // const handleClickOpen = () => {
+    //     setOpen(true)
+    // }
 
     const handleClickClose = (save) => {
         if (save) {
-            console.log('here2')
             editExercise({
                 planExerciseId,
                 series,
                 repetitions
             })
         }
-        console.log('here3')
-
         setOpen(false)
     }
 
@@ -208,6 +207,7 @@ const DialogExerciseModify = ({editExercise, planExerciseId}) => {
                         type={'number'}
                         required
                         label={'Series'}
+                        defaultValue={prevSeries}
                         onChange={(e) => setSeries(e.target.value)}
                     />
 
@@ -218,6 +218,7 @@ const DialogExerciseModify = ({editExercise, planExerciseId}) => {
                         type={'number'}
                         required
                         label={'Repetitions'}
+                        defaultValue={prevRepetitions}
                         onChange={(e) => setRepetitions(e.target.value)}
                     />
                 </DialogContent>
