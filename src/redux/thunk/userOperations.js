@@ -33,7 +33,6 @@ export const apiLogin = ({email, password}) =>
 
 export const apiRegister = ({firstName, lastName, email, password}) =>
     async (dispatch, getState, api) => {
-        //TODO: zmienic endpoint aby bylo to co wyzej
         return await axios.post(api + 'register', {
             email,
             password,

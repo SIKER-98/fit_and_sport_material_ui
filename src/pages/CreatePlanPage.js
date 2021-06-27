@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
     Button,
     Checkbox,
@@ -46,6 +46,10 @@ const CreatePlanPage = ({exercises, userId, createPlan, addExerciseToPlan}) => {
 
         return newState
     }
+
+    useEffect(()=>{
+        document.title='New Plan Page'
+    },[])
 
     const [state, setState] = React.useState(createState());
     const [error, setError] = useState({title: false, description: false})

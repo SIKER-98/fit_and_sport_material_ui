@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Container from "@material-ui/core/Container";
 import {makeStyles} from "@material-ui/core/styles";
 import {Button, Grid, Link, TextField, Typography} from "@material-ui/core";
@@ -30,6 +30,10 @@ const LoginPage = ({user, getAllUsers, apiLogin}) => {
         password: ' '
     })
     const [error, setError] = useState(false)
+
+    useEffect(()=>{
+        document.title='Login Page'
+    },[])
 
     const onChange = (event) => {
         setError(false)

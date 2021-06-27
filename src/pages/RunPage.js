@@ -34,7 +34,7 @@ const RunPage = ({runs, user, addRun, delRun, editRun}) => {
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
     useEffect(() => {
-
+        document.title='Run Page'
     })
 
     const handleChangePage = (event, newPage) => {

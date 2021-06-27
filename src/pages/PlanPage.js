@@ -24,6 +24,8 @@ const PlanPage = ({fetchExercise, getUserPlans, user, plan, deletePlan, editPlan
         fetchExercise()
         getUserPlans(user.userId)
         getRuns(user.userId)
+
+        document.title='Plan Dashboard'
     },[])
 
     const breakpoints = {

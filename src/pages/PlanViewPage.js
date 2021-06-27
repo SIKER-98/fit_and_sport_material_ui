@@ -44,6 +44,7 @@ const PlanViewPage = (
 
     useEffect(() => {
         getExercises(planInfo.planId)
+        document.title='Plan Info Page'
     }, [])
 
     useEffect(() => {
