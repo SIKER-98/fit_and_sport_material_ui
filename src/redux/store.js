@@ -3,7 +3,7 @@ import {applyMiddleware, createStore} from "redux";
 import {composeWithDevTools} from 'redux-devtools-extension'
 import thunk from "redux-thunk";
 
-const api = 'https://localhost:5001/'
+const api = 'https://fitapp-sikorski-wasiluk.herokuapp.com/'
 
 
 const store = createStore(
