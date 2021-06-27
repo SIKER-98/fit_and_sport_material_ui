@@ -84,6 +84,7 @@ const DialogPlanModify = (props) => {
     const [open, setOpen] = useState(false)
     const [title, setTitle] = useState(props.title)
     const [description, setDescription] = useState(props.description)
+    const [error, setError] = useState({title: false, description: false})
 
     // const handleChange = (event) => {
     //     console.log(event.target.value)
@@ -95,6 +96,15 @@ const DialogPlanModify = (props) => {
 
     const handleClickClose = (save) => {
         if (save) {
+            if ( title.length < 3) {
+                setError({...error, title: true})
+                return
+            }
+            if ( description.length < 3) {
+                setError({...error, description: true})
+                return
+            }
+
             props.editPlan({title, description, planId: props.planId})
         }
 
@@ -117,7 +127,11 @@ const DialogPlanModify = (props) => {
                         required
                         label={'Title'}
                         defaultValue={title}
-                        onChange={(e) => setTitle(e.target.value)}
+                        error={error.title}
+                        onChange={(e) => {
+                            setTitle(e.target.value)
+                            setError({...error, title: false})
+                        }}
                     />
 
                     <TextField
@@ -127,9 +141,13 @@ const DialogPlanModify = (props) => {
                         type={'text'}
                         required
                         multiline
+                        error={error.description}
                         label={'Description'}
                         defaultValue={description}
-                        onChange={e => setDescription(e.target.value)}
+                        onChange={e => {
+                            setDescription(e.target.value)
+                            setError({...error, description: false})
+                        }}
                     />
                 </DialogContent>
 

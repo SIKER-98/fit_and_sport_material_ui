@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {
     Button,
     Checkbox,
@@ -48,7 +48,7 @@ const CreatePlanPage = ({exercises, userId, createPlan, addExerciseToPlan}) => {
     }
 
     const [state, setState] = React.useState(createState());
-
+    const [error, setError] = useState({title: false, description: false})
 
     const handleCheck = (event) => {
         setState({...state, [event.target.name]: event.target.checked})
@@ -57,11 +57,22 @@ const CreatePlanPage = ({exercises, userId, createPlan, addExerciseToPlan}) => {
 
     const handleChange = (event) => {
         setState({...state, [event.target.name]: event.target.value})
+        setError({...error, [event.target.name]: false})
     }
 
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+
+        if (state.title.length < 3) {
+            setError({...error, title: true})
+            return
+        }
+
+        if (state.description.length < 3) {
+            setError({...error, description: true})
+            return
+        }
 
         let planId = await createPlan({
             userId,
@@ -112,6 +123,7 @@ const CreatePlanPage = ({exercises, userId, createPlan, addExerciseToPlan}) => {
                                 required
                                 // fullWidth
                                 label={'Title'}
+                                error={error.title}
                                 onChange={handleChange}
                             />
                         </Grid>
@@ -123,6 +135,7 @@ const CreatePlanPage = ({exercises, userId, createPlan, addExerciseToPlan}) => {
                                 required
                                 // fullWidth
                                 label={'Description'}
+                                error={error.description}
                                 multiline
                                 onChange={handleChange}
                             />

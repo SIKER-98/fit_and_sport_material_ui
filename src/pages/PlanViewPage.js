@@ -238,9 +238,19 @@ const DialogStatAdd = ({variant, prevSeries, prevRepetitions, planExerciseId, ad
     const [open, setOpen] = useState(false)
     const [series, setSeries] = useState(prevSeries)
     const [repetitions, setRepetitions] = useState(prevRepetitions)
+    const [error, setError] = useState({series: false, repetitions: false})
 
     const handleClickClose = (save) => {
         if (save) {
+            if (series < 1) {
+                setError({...error, series: true})
+                return
+            }
+            if (repetitions < 1) {
+                setError({...error, repetitions: true})
+                return
+            }
+
             if (variant === 'ADD') {
                 addStat({
                     series,
@@ -289,7 +299,11 @@ const DialogStatAdd = ({variant, prevSeries, prevRepetitions, planExerciseId, ad
                         required
                         label={'Series'}
                         defaultValue={prevSeries}
-                        onChange={(e) => setSeries(e.target.value)}
+                        error={error.series}
+                        onChange={(e) => {
+                            setSeries(e.target.value)
+                            setError({...error, series: false})
+                        }}
                     />
 
                     <TextField
@@ -300,7 +314,11 @@ const DialogStatAdd = ({variant, prevSeries, prevRepetitions, planExerciseId, ad
                         required
                         label={'Repetitions'}
                         defaultValue={prevRepetitions}
-                        onChange={(e) => setRepetitions(e.target.value)}
+                        error={error.repetitions}
+                        onChange={(e) => {
+                            setRepetitions(e.target.value)
+                            setError({...error, repetitions: false})
+                        }}
                     />
                 </DialogContent>
 
@@ -332,21 +350,23 @@ const useStyles = makeStyles((theme) => (
 ))
 
 const DialogExerciseModify = ({editExercise, planExerciseId, prevSeries, prevRepetitions, exerciseId}) => {
-    // const classes = useStyles()
     const [open, setOpen] = useState(false)
-    const [series, setSeries] = useState(0)
-    const [repetitions, setRepetitions] = useState(0)
+    const [series, setSeries] = useState(prevSeries)
+    const [repetitions, setRepetitions] = useState(prevRepetitions)
+    const [error, setError] = useState({series: false, repetitions: false})
 
-    // const handleChange = (event) => {
-    //     console.log(event.target.value)
-    // }
-    //
-    // const handleClickOpen = () => {
-    //     setOpen(true)
-    // }
 
     const handleClickClose = (save) => {
         if (save) {
+            if (series < 1) {
+                setError({...error, series: true})
+                return
+            }
+            if (repetitions < 1) {
+                setError({...error, repetitions: true})
+                return
+            }
+
             editExercise({
                 planExerciseId,
                 series,
@@ -373,7 +393,11 @@ const DialogExerciseModify = ({editExercise, planExerciseId, prevSeries, prevRep
                         required
                         label={'Series'}
                         defaultValue={prevSeries}
-                        onChange={(e) => setSeries(e.target.value)}
+                        error={error.series}
+                        onChange={(e) => {
+                            setSeries(e.target.value)
+                            setError({...error, series: false})
+                        }}
                     />
 
                     <TextField
@@ -384,7 +408,11 @@ const DialogExerciseModify = ({editExercise, planExerciseId, prevSeries, prevRep
                         required
                         label={'Repetitions'}
                         defaultValue={prevRepetitions}
-                        onChange={(e) => setRepetitions(e.target.value)}
+                        error={error.repetitions}
+                        onChange={(e) => {
+                            setRepetitions(e.target.value)
+                            setError({...error, repetitions: false})
+                        }}
                     />
                 </DialogContent>
 
@@ -404,9 +432,10 @@ const DialogExerciseModify = ({editExercise, planExerciseId, prevSeries, prevRep
 const DialogExerciseAdd = ({exercises, addExercise, planId}) => {
     const classes = useStyles()
     const [open, setOpen] = useState(false);
-    const [exercise, setExercise] = useState(null)
-    const [series, setSeries] = useState(0)
-    const [repetitions, setRepetitions] = useState(0)
+    const [exercise, setExercise] = useState('')
+    const [series, setSeries] = useState(1)
+    const [repetitions, setRepetitions] = useState(1)
+    const [error, setError] = useState({series: false, repetitions: false, exercise: false})
 
     const handleChange = (event) => {
         console.log(event.target.value)
@@ -418,11 +447,24 @@ const DialogExerciseAdd = ({exercises, addExercise, planId}) => {
     }
 
     const handleClickClose = (save) => {
-        console.log('exercise:', exercise)
-        console.log('series: ', series)
-        console.log('repetitions:', repetitions)
-
         if (save) {
+            console.log(series, repetitions, exercise)
+            if (series < 1) {
+                console.log('wszedlem1')
+                setError({...error, series: true})
+                return
+            }
+            if (repetitions < 1) {
+                console.log('wszedlem2')
+                setError({...error, repetitions: true})
+                return
+            }
+            if (exercise === '') {
+                console.log('wszedlem3')
+                setError({...error, exercise: true})
+                return
+            }
+
             const exerciseName = exercises.find(item => item.id === exercise)?.exerciseName
 
             addExercise({
@@ -456,6 +498,7 @@ const DialogExerciseAdd = ({exercises, addExercise, planId}) => {
                                 value={exercise}
                                 onChange={handleChange}
                                 input={<Input/>}
+                                error={error.exercise}
                             >
                                 <MenuItem value="">
                                     <em>None</em>
@@ -467,9 +510,6 @@ const DialogExerciseAdd = ({exercises, addExercise, planId}) => {
                                     </MenuItem>
                                 ))}
 
-                                {/*<MenuItem value={10}>Exercise 1</MenuItem>*/}
-                                {/*<MenuItem value={20}>Exercise 2</MenuItem>*/}
-                                {/*<MenuItem value={30}>Exercise 3</MenuItem>*/}
                             </Select>
                         </FormControl>
                         <div>
@@ -479,8 +519,13 @@ const DialogExerciseAdd = ({exercises, addExercise, planId}) => {
                                 variant={'standard'}
                                 type={'number'}
                                 required
+                                defaultValue={series}
                                 label={'Series'}
-                                onChange={(e) => setSeries(e.target.value)}
+                                error={error.series}
+                                onChange={(e) => {
+                                    setSeries(e.target.value * 1)
+                                    setError({...error, series: false})
+                                }}
                             />
 
                             <TextField
@@ -488,10 +533,15 @@ const DialogExerciseAdd = ({exercises, addExercise, planId}) => {
                                 name={'repetitions'}
                                 variant={'standard'}
                                 type={'number'}
+                                defaultValue={repetitions}
                                 required
                                 label={'Repetitions'}
+                                error={error.repetitions}
                                 onChange={
-                                    (e) => setRepetitions(e.target.value)
+                                    (e) => {
+                                        setRepetitions(e.target.value * 1)
+                                        setError({...error, repetitions: false})
+                                    }
                                 }
                             />
                         </div>
