@@ -61,7 +61,13 @@ const planInfoReducer = (state = INITIAL_STATE, action) => {
             }
 
         case planInfoTypes.EXERCISE_STAT_EDIT:
-            return {}
+            const whereEdit = state.exerciseList.findIndex(item => item.planExerciseId === action.item.planExerciseId)
+            const editedStat = state.exerciseList[whereEdit]
+                .statistic.map(item => item.id !== action.item.statistic.id ? item : action.item.statistic)
+            state.exerciseList[whereEdit].statistic = editedStat
+            return {
+                ...state
+            }
 
         case planInfoTypes.EXERCISE_STAT_CLEAR:
             const whereClear = state.exerciseList.findIndex(item => item.planExerciseId === action.item.planExerciseId)

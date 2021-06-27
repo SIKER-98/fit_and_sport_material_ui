@@ -21,22 +21,25 @@ import {
     apiAddExerciseStatistic,
     apiAddExerciseToPlanInfo,
     apiDelExerciseInPlan, apiDelExerciseStatistic,
-    apiEditExerciseInPlan, apiGetExerciseStatistic,
+    apiEditExerciseInPlan, apiEditExerciseStatistic, apiGetExerciseStatistic,
     apiGetPlanExercises
 } from "../redux/thunk/planInfoOperations";
-import {apiGetStatistic} from "../redux/thunk/exerciseStatisticOperations";
+import {
+    AreaSeries,
+    ArgumentAxis,
+    Chart, Legend,
+    SplineSeries, Title,
+    Tooltip,
+    ValueAxis
+} from "@devexpress/dx-react-chart-material-ui";
+import {BarSeries, EventTracker, ValueScale} from "@devexpress/dx-react-chart";
 
-const PlanViewPage = ({
-                          planInfo,
-                          getExercises,
-                          addExercise,
-                          exerciseList,
-                          editExercise,
-                          delExercise,
-                          getStatistic,
-                          addStat,
-                          delStat
-                      }) => {
+const PlanViewPage = (
+    {
+        planInfo, getExercises, addExercise,
+        exerciseList, editExercise, delExercise,
+        getStatistic, addStat, delStat, editStat
+    }) => {
 
 
     useEffect(() => {
@@ -82,6 +85,7 @@ const PlanViewPage = ({
                                      edit={editExercise}
                                      del={delExercise}
                                      addStat={addStat}
+                                     editStat={editStat}
                                      delStat={delStat}
                                      planExerciseId={row.planExerciseId}
                                 />
@@ -162,7 +166,8 @@ const Row = (props) => {
                                                 <DialogStatAdd
                                                     prevSeries={historyRow.series}
                                                     prevRepetitions={historyRow.repetitions}
-                                                    planExerciseId={historyRow.planExerciseId}
+                                                    planExerciseId={row.planExerciseId}
+                                                    statId={historyRow.id}
                                                     editStat={props.editStat}
                                                     variant={'EDIT'}
                                                 />
@@ -187,6 +192,8 @@ const Row = (props) => {
                                 addStat={props.addStat}
                                 variant={'ADD'}
                             />
+
+                            <StatChart data={row.statistic}/>
                         </Box>
                     </Collapse>
                 </TableCell>
@@ -197,7 +204,36 @@ const Row = (props) => {
     )
 }
 
-const DialogStatAdd = ({variant, prevSeries, prevRepetitions, planExerciseId, addStat, editStat}) => {
+const StatChart = ({data}) => {
+    return (
+        <Paper>
+            <Chart
+                data={data}
+                rotated
+            >
+                <ValueScale name="total"/>
+
+                <ArgumentAxis/>
+                <ValueAxis scaleName="total" showGrid={true} showLine showTicks/>
+
+                <BarSeries
+                    name={'Total'}
+                    valueField="total"
+                    argumentField="dateTime"
+                    scaleName={'total'}
+                />
+
+                <EventTracker/>
+                <Tooltip/>
+
+                <Legend/>
+                <Title text={'Your Results'}/>
+            </Chart>
+        </Paper>
+    )
+}
+
+const DialogStatAdd = ({variant, prevSeries, prevRepetitions, planExerciseId, addStat, editStat, statId}) => {
     // const classes = useStyles()
     const [open, setOpen] = useState(false)
     const [series, setSeries] = useState(prevSeries)
@@ -212,7 +248,12 @@ const DialogStatAdd = ({variant, prevSeries, prevRepetitions, planExerciseId, ad
                     planExerciseId
                 })
             } else if (variant === 'EDIT') {
-
+                editStat({
+                    series: series * 1,
+                    repetitions: repetitions * 1,
+                    planExerciseId: planExerciseId * 1,
+                    id: statId,
+                })
             }
         }
         setOpen(false)
@@ -483,7 +524,8 @@ const mapDispatchToProps = dispatch => ({
 
     getStatistic: item => dispatch(apiGetExerciseStatistic(item)),
     addStat: item => dispatch(apiAddExerciseStatistic(item)),
-    delStat: item => dispatch(apiDelExerciseStatistic(item))
+    delStat: item => dispatch(apiDelExerciseStatistic(item)),
+    editStat: item => dispatch(apiEditExerciseStatistic(item)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(PlanViewPage)

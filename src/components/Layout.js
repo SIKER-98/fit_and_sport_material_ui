@@ -53,10 +53,13 @@ const useStyles = makeStyles((theme) => {
         date: {
             flexGrow: 1
         },
-        toolbar: {
+        toolbarMobile: {
             ...theme.mixins.toolbar,
             marginTop: 200
         },
+
+        toolbar: theme.mixins.toolbar,
+
         avatar: {
             marginLeft: theme.spacing(2),
         },
@@ -232,7 +235,7 @@ const Layout = ({children, user, logout}) => {
 
             {/* main content */}
             <div className={classes.page}>
-                <div className={classes.toolbar}/>
+                <div className={windowDimensions.width > 800 ? classes.toolbar : classes.toolbarMobile}/>
                 {children}
             </div>
         </div>

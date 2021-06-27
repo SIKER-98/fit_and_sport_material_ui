@@ -77,6 +77,8 @@ export const apiGetExerciseStatistic = (planExerciseId) =>
                 console.log('ExerciseStats:', res.data)
                 dispatch(planInfoActions.clearStatistic({planExerciseId}))
                 res.data.forEach(item => {
+                    item.total = item.series * item.repetitions
+                    item.time = new Date(item.dateTime).toLocaleString()
                     dispatch(planInfoActions.addStatistic({planExerciseId, statistic: item}))
                 })
             })
@@ -96,6 +98,8 @@ export const apiAddExerciseStatistic = ({series, repetitions, planExerciseId}) =
         })
             .then(res => {
                 console.log("Stat add:", res.data)
+                res.data.total = res.data.series * res.data.repetitions
+                res.data.time = new Date(res.data.dateTime).toLocaleString()
                 dispatch(planInfoActions.addStatistic({planExerciseId, statistic: res.data}))
             })
             .catch(e => {
@@ -110,6 +114,27 @@ export const apiDelExerciseStatistic = ({exerciseStatisticId, planExerciseId}) =
             .then(res => {
                 console.log('deleted stat:', exerciseStatisticId)
                 dispatch(planInfoActions.delStatistic({exerciseStatisticId, planExerciseId}))
+            })
+            .catch(e => {
+                console.log(e)
+            })
+    }
+
+export const apiEditExerciseStatistic = ({series, repetitions, planExerciseId, id}) =>
+    async (dispatch, getState, api) => {
+        console.log('edit', id, series, repetitions)
+        await axios.put(api + 'exerciseStatistics/update', {
+            exerciseStatistic: {
+                id,
+                series: series * 1,
+                repetitions: repetitions * 1,
+            },
+        })
+            .then(res => {
+                console.log("Stat edited:", id)
+                res.data.total = res.data.series * res.data.repetitions
+                res.data.time = new Date(res.data.dateTime).toLocaleString()
+                dispatch(planInfoActions.editStatistic({planExerciseId, statistic: res.data}))
             })
             .catch(e => {
                 console.log(e)
