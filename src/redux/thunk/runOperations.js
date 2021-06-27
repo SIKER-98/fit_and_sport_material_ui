@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const apiGetRuns = (userId) =>
     async (dispatch, getState, api) => {
-        await axios.get(api + 'api/runs/user', {params: {userId}})
+        await axios.get(api + 'runs/user', {params: {userId}})
             .then(res => {
                 console.log('RunResults:', res.data)
                 dispatch(runActions.clear())
@@ -18,7 +18,14 @@ export const apiGetRuns = (userId) =>
 
 export const apiRunAdd = ({userId, distance, time}) =>
     async (dispatch, getState, api) => {
-        await axios.post(api + 'api/runs/add', {}, {params: {userId, distance, time}})
+        console.log(distance, time)
+        await axios.post(api + 'runs/add', {
+            userId,
+            runScore: {
+                distance: distance * 1,
+                time: time * 1
+            }
+        })
             .then(res => {
                 console.log('RunAdd:', res.data)
                 dispatch(runActions.add(res.data))
@@ -30,7 +37,7 @@ export const apiRunAdd = ({userId, distance, time}) =>
 
 export const apiRunDelete = ({runScoreId}) =>
     async (dispatch, getState, api) => {
-        await axios.delete(api + 'api/runs/delete', {params: {runScoreId}})
+        await axios.delete(api + 'runs/delete', {params: {runScoreId}})
             .then(res => {
                 console.log('RunDel:', res.data)
                 dispatch(runActions.del(runScoreId))
@@ -42,11 +49,15 @@ export const apiRunDelete = ({runScoreId}) =>
 
 export const apiRunUpdate = ({userId, runScoreId, distance, time}) =>
     async (dispatch, getState, api) => {
-        await axios.put(api + 'api/runs/update', {}, {
-            params: {
-                userId, runScoreId, distance, time
+        await axios.put(api + 'runs/update', {
+                userId,
+                runScore: {
+                    id: runScoreId,
+                    distance: distance * 1,
+                    time: time * 1
+                }
             }
-        })
+        )
             .then(res => {
                 console.log('RunEdit:', res.data)
                 dispatch(runActions.edit({
