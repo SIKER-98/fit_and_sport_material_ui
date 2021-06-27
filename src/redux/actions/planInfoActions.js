@@ -16,8 +16,25 @@ const init = item => ({
     type: planInfoTypes.PLAN_INFO_INIT, item
 })
 
-const edit = item =>({
-    type:planInfoTypes.PLAN_INFO_EDIT, item
+const edit = item => ({
+    type: planInfoTypes.PLAN_INFO_EDIT, item
+})
+
+//statysytki
+const addStatistic = item => ({
+    type: planInfoTypes.EXERCISE_STAT_ADD, item
+})
+
+const delStatistic = item => ({
+    type: planInfoTypes.EXERCISE_STAT_DEL, item
+})
+
+const editStatistic = item => ({
+    type: planInfoTypes.EXERCISE_STAT_EDIT, item
+})
+
+const clearStatistic = (item) => ({
+    type: planInfoTypes.EXERCISE_STAT_CLEAR, item
 })
 
 export default {
@@ -25,5 +42,9 @@ export default {
     del,
     clear,
     init,
-    edit
+    edit,
+    addStatistic,
+    delStatistic,
+    editStatistic,
+    clearStatistic
 }

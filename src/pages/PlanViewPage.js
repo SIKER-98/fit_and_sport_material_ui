@@ -23,13 +23,20 @@ import {
     apiEditExerciseInPlan,
     apiGetPlanExercises
 } from "../redux/thunk/planInfoOperations";
+import {apiGetStatistic} from "../redux/thunk/exerciseStatisticOperations";
 
-const PlanViewPage = ({planInfo, getExercises, addExercise, exerciseList, editExercise, delExercise}) => {
+const PlanViewPage = ({planInfo, getExercises, addExercise, exerciseList, editExercise, delExercise, getStatistic}) => {
 
 
     useEffect(() => {
         getExercises(planInfo.planId)
     }, [])
+
+    useEffect(() => {
+        planInfo.exerciseList.forEach(item => {
+            getStatistic(item.planExerciseId)
+        })
+    }, [planInfo.exerciseList])
 
     return (
         <Grid container spacing={2}>
@@ -126,15 +133,15 @@ const Row = (props) => {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {/*{row.history.map(historyRow=>(*/}
-                                    {/*    <TableRow key={historyRow.date}>*/}
-                                    {/*        <TableCell component={'th'} scope={'row'}>*/}
-                                    {/*            {historyRow.date}*/}
-                                    {/*        </TableCell>*/}
-                                    {/*        <TableCell>{historyRow.series}</TableCell>*/}
-                                    {/*        <TableCell>{historyRow.repetitions}</TableCell>*/}
-                                    {/*    </TableRow>*/}
-                                    {/*))}*/}
+                                    {row.statistic.map(historyRow=>(
+                                        <TableRow key={historyRow.date}>
+                                            <TableCell component={'th'} scope={'row'}>
+                                                {historyRow.date}
+                                            </TableCell>
+                                            <TableCell>{historyRow.series}</TableCell>
+                                            <TableCell>{historyRow.repetitions}</TableCell>
+                                        </TableRow>
+                                    ))}
                                 </TableBody>
                             </Table>
                         </Box>
@@ -347,7 +354,8 @@ const mapDispatchToProps = dispatch => ({
     getExercises: item => dispatch(apiGetPlanExercises(item)),
     addExercise: item => dispatch(apiAddExerciseToPlanInfo(item)),
     editExercise: item => dispatch(apiEditExerciseInPlan(item)),
-    delExercise: item => dispatch(apiDelExerciseInPlan(item))
+    delExercise: item => dispatch(apiDelExerciseInPlan(item)),
+    getStatistic: item => dispatch(apiGetStatistic(item))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(PlanViewPage)

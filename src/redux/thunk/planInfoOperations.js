@@ -9,6 +9,7 @@ export const apiGetPlanExercises = (planId) =>
 
                 dispatch(planInfoActions.clear())
                 res.data.forEach(item => {
+                    item.statistic = []
                     dispatch(planInfoActions.add(item))
                 })
             })

@@ -9,6 +9,7 @@ import {apiFetchExercises} from "../redux/thunk/exerciseOperations";
 import {connect} from "react-redux";
 import {apiDeletePlan, apiEditPlan, apiGetUserPlans} from "../redux/thunk/planOperations";
 import {Edit} from "@material-ui/icons";
+import {apiGetRuns} from "../redux/thunk/runOperations";
 
 const useStyles = makeStyles(theme => ({
     create: {
@@ -16,13 +17,14 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-const PlanPage = ({fetchExercise, getUserPlans, user, plan, deletePlan, editPlan}) => {
+const PlanPage = ({fetchExercise, getUserPlans, user, plan, deletePlan, editPlan, getRuns}) => {
     const classes = useStyles()
     const history = useHistory()
 
     useEffect(() => {
         fetchExercise()
         getUserPlans(user.userId)
+        getRuns(user.userId)
     }, [])
 
     const breakpoints = {
@@ -78,7 +80,8 @@ const mapDispatchToProps = dispatch => ({
     fetchExercise: () => dispatch(apiFetchExercises()),
     getUserPlans: (userId) => dispatch(apiGetUserPlans(userId)),
     deletePlan: (plan) => dispatch(apiDeletePlan(plan)),
-    editPlan: (plan) => dispatch(apiEditPlan(plan))
+    editPlan: (plan) => dispatch(apiEditPlan(plan)),
+    getRuns: item => dispatch(apiGetRuns(item)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(PlanPage)

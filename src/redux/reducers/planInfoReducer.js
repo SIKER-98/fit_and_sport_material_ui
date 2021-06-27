@@ -39,6 +39,35 @@ const planInfoReducer = (state = INITIAL_STATE, action) => {
                 ...state,
             }
 
+
+        /// statystyki
+        case planInfoTypes.EXERCISE_STAT_ADD:
+            const whereAdd = state.exerciseList.findIndex(item => item.planExerciseId === action.item.exerciseId)
+            state.exerciseList[whereAdd].statistic.push(action.item.statistic)
+
+            return {
+                ...state
+            }
+
+        case planInfoTypes.EXERCISE_STAT_DEL:
+            const whereDel = state.exerciseList.findIndex(item => item.planExerciseId === action.item.exerciseId)
+            state.exerciseList[whereDel].statistic.filter(item => item.planExerciseId !== action.item.statisticId)
+
+            return {
+                ...state
+            }
+
+        case planInfoTypes.EXERCISE_STAT_EDIT:
+            return {}
+
+        case planInfoTypes.EXERCISE_STAT_CLEAR:
+            const whereClear = state.exerciseList.findIndex(item => item.planExerciseId === action.item.exerciseId)
+            state.exerciseList[whereClear].statistic = []
+
+            return {
+                ...state
+            }
+
         default:
             return state
     }

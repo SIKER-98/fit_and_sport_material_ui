@@ -12,6 +12,7 @@ import PlanViewPage from "./pages/PlanViewPage";
 import store from "./redux/store";
 import {Provider} from "react-redux";
 import AuthenticatedRoute from "./components/AuthenticatedRoute";
+import RunPage from "./pages/RunPage";
 
 const theme = createMuiTheme({
     palette: {
@@ -50,6 +51,10 @@ function App() {
 
                             <AuthenticatedRoute path={'/plan'}>
                                 <PlanViewPage/>
+                            </AuthenticatedRoute>
+
+                            <AuthenticatedRoute path={'/running'}>
+                                <RunPage/>
                             </AuthenticatedRoute>
 
                         </Switch>
